@@ -1,0 +1,23 @@
+{
+	"name": "proshop",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "MERN shopping cart app",
+	"main": "server.js",
+	"scripts": {
+		"start": "node backend/server"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nucmatt/proshop.git"
+	},
+	"author": "Matthew Wessel",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/nucmatt/proshop/issues"
+	},
+	"homepage": "https://github.com/nucmatt/proshop#readme",
+	"dependencies": {
+		"express": "^4.17.1"
+	}
+}
