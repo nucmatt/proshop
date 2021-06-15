@@ -1,11 +1,22 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
 import Rating from '../components/Rating.js';
-import products from '../products.js';
+import axios from 'axios';
 
 // match is a prop for React Router. The match prop is destructured here so props.match isn't necessar, just match. See reactrouter.com/web/api/match for more info.
 const ProductScreen = ({ match }) => {
-	const product = products.find((product) => product._id === match.params.id);
+	const [product, setProduct] = useState({});
+	useEffect(() => {
+		const fetchProduct = async () => {
+			const { data } = await axios.get(`/api/products/${match.params.id}`);
+
+			setProduct(data);
+		};
+
+		fetchProduct();
+		// eslint-disable-next-line
+	}, []);
 	return (
 		<>
 			<Link className='btn btn-light my-3' to='/'>
@@ -51,10 +62,7 @@ const ProductScreen = ({ match }) => {
 							</ListGroup.Item>
 							<ListGroup.Item>
 								<Row>
-									<Button
-										type='button'
-										disabled={product.countInStock === 0}
-									>
+									<Button type='button' disabled={product.countInStock === 0}>
 										Add to Cart
 									</Button>
 								</Row>
