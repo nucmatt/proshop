@@ -26,7 +26,9 @@ router.get(
 		if (product) {
 			res.json(product);
 		} else {
-			res.status(404).json({ message: 'Product not found' });
+			// This is where asyncHandler comes into play. All you have to do now for errors is set the status code adn then throw an error with whatever message you like.
+			res.status(404);
+			throw new Error('Product not found');
 		}
 	})
 );
