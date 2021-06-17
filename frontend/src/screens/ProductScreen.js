@@ -1,26 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
+import Loader from '../components/Loader.js';
+import Message from '../components/Message.js';
 import Rating from '../components/Rating.js';
-import axios from 'axios';
+import { listProductDetails } from '../actions/productActions.js';
 
 // match is a prop for React Router. The match prop is destructured here so props.match isn't necessar, just match. See reactrouter.com/web/api/match for more info.
 const ProductScreen = ({ match }) => {
-	const [product, setProduct] = useState({});
+	const dispatch = useDispatch();
+
+	const productDetails = useSelector(state => state.productDetails);
+	const { loading, error, product } = productDetails;
+
 	useEffect(() => {
-		const fetchProduct = async () => {
-			const { data } = await axios.get(`/api/products/${match.params.id}`);
+		dispatch(listProductDetails(match.params.id));
+	}, [dispatch, match]);
 
-			setProduct(data);
-		};
-
-		fetchProduct();
-	}, [match]);
 	return (
 		<>
 			<Link className='btn btn-light my-3' to='/'>
 				Go Back
 			</Link>
+			{loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : 
 			<Row>
 				<Col md={6}>
 					<Image src={product.image} alt={product.name} fluid />
@@ -70,6 +73,7 @@ const ProductScreen = ({ match }) => {
 					</Card>
 				</Col>
 			</Row>
+			}
 		</>
 	);
 };
