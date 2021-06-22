@@ -9,7 +9,7 @@ import { listProductDetails } from '../actions/productActions.js';
 
 // match is a prop for React Router. The match prop is destructured here so props.match isn't necessar, just match. See reactrouter.com/web/api/match for more info.
 const ProductScreen = ({ history, match }) => {
-	const [qty, setQty] = useState(0);
+	const [qty, setQty] = useState(1);
 
 	const dispatch = useDispatch();
 
