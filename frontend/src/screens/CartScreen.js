@@ -12,7 +12,7 @@ import {
 } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
 import Message from '../components/Message.js';
-import { addToCart } from '../actions/cartActions.js';
+import { addToCart, removeFromCart } from '../actions/cartActions.js';
 
 const CartScreen = ({ match, location, history }) => {
 	const productId = match.params.id;
@@ -32,7 +32,7 @@ const CartScreen = ({ match, location, history }) => {
 	}, [dispatch, productId, qty]);
 
 	const removeFromCartHandler = (id) => {
-		console.log('remove');
+		dispatch(removeFromCart(id));
 	};
 
 	const checkoutHandler = () => {
