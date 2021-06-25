@@ -14,6 +14,7 @@ import {
 	USER_UPDATE_PROFILE_REQUEST,
 	USER_UPDATE_PROFILE_SUCCESS,
 	USER_UPDATE_PROFILE_RESET,
+	USER_DETAILS_RESET,
 } from '../constants/userConstants.js';
 
 export const login = (email, password) => async (dispatch) => {
@@ -54,7 +55,8 @@ export const login = (email, password) => async (dispatch) => {
 
 export const logout = () => (dispatch) => {
 	localStorage.removeItem('userInfo');
-	dispatch({ type: USER_UPDATE_PROFILE_RESET })
+	dispatch({ type: USER_DETAILS_RESET });
+	dispatch({ type: USER_UPDATE_PROFILE_RESET });
 	dispatch({ type: USER_LOGOUT });
 };
 
@@ -106,25 +108,23 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 		});
 
 		// getState will grab all the state present and here we destructure two levels of state to obtain the userInfo. (I believe this would look like getState().userLogin.userInfo without destructuring.) This is done to obtain the user's token to access the protected updateUserProfile route.
-		const { userLogin: { userInfo } } = getState();
+		const {
+			userLogin: { userInfo },
+		} = getState();
 
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${userInfo.token}`
+				Authorization: `Bearer ${userInfo.token}`,
 			},
 		};
 
-		const { data } = await axios.get(
-			`/api/users/${id}`,
-			config
-		);
+		const { data } = await axios.get(`/api/users/${id}`, config);
 
 		dispatch({
 			type: USER_DETAILS_SUCCESS,
 			payload: data,
 		});
-
 	} catch (error) {
 		dispatch({
 			type: USER_DETAILS_FAIL,
@@ -142,26 +142,23 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 			type: USER_UPDATE_PROFILE_REQUEST,
 		});
 
-		const { userLogin: { userInfo } } = getState();
+		const {
+			userLogin: { userInfo },
+		} = getState();
 
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${userInfo.token}`
+				Authorization: `Bearer ${userInfo.token}`,
 			},
 		};
 
-		const { data } = await axios.put(
-			`/api/users/profile`,
-			user,
-			config
-		);
+		const { data } = await axios.put(`/api/users/profile`, user, config);
 
 		dispatch({
 			type: USER_UPDATE_PROFILE_SUCCESS,
 			payload: data,
 		});
-
 	} catch (error) {
 		dispatch({
 			type: USER_UPDATE_PROFILE_FAIL,
