@@ -37,4 +37,23 @@ const addOrderItems = asyncHandler(async (req, res) => {
 	}
 });
 
-export { addOrderItems };
+// @desc Get order by ID
+// @route GET /api/orders/:id
+// @access Private
+
+const getOrderById = asyncHandler(async (req, res) => {
+	// populate will attach the user's name and email to the user property in the order object we are finding by ID. Without populate you will only get back the user's object ID as specified in the orderModel. .populate() is a Mongoose method.
+	const order = await Order.findById(req.params.id).populate(
+		'user',
+		'name email'
+	);
+
+	if (order) {
+		res.json(order);
+	} else {
+		res.status(404);
+		throw new Error('Order not found');
+	}
+});
+
+export { addOrderItems, getOrderById };
