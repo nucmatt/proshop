@@ -35,7 +35,7 @@ const PlaceOrderScreen = ({ history }) => {
 
 	useEffect(() => {
 		if (success) {
-			history.push(`order/${order._id}`);
+			history.push(`orders/${order._id}`);
 		}
 		// eslint-disable-next-line
 	}, [history, success]);
@@ -144,7 +144,7 @@ const PlaceOrderScreen = ({ history }) => {
 							<ListGroup.Item>
 								<Button
 									type='button'
-									disable={cart.cartItems === 0}
+									disabled={cart.cartItems === 0}
 									onClick={placeOrderHandler}
 								>
 									Place Order
