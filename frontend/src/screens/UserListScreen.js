@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa';
 import Message from '../components/Message.js';
 import Loader from '../components/Loader.js';
-import { listUsers } from '../actions/userActions.js';
+import { listUsers, deleteUser } from '../actions/userActions.js';
 
 const UserListScreen = ({ history }) => {
 	const dispatch = useDispatch();
@@ -13,20 +13,26 @@ const UserListScreen = ({ history }) => {
 	const userList = useSelector((state) => state.userList);
 	const { loading, error, users } = userList;
 
-    const userLogin = useSelector((state) => state.userLogin);
-    const { userInfo } = userLogin;
+	const userLogin = useSelector((state) => state.userLogin);
+	const { userInfo } = userLogin;
+
+	const userDelete = useSelector((state) => state.userDelete);
+	const { success: successDelete } = userDelete;
 
 	useEffect(() => {
-        if(userInfo && userInfo.isAdmin) {
-            dispatch(listUsers());
-        } else {
-            history.push('/login');
-        }
-        // eslint-disable-next-line
-	}, [dispatch, history]);
+		if (userInfo && userInfo.isAdmin) {
+			dispatch(listUsers());
+		} else {
+			history.push('/login');
+		}
+		// successDelete is added as a dependency to the useEffect to ensure listUsers is run again after a deletion.
+		// eslint-disable-next-line
+	}, [dispatch, history, successDelete]);
 
 	const deleteHandler = (id) => {
-		console.log(id, 'deleted');
+		if (window.confirm('Are you sure?')) {
+			dispatch(deleteUser(id));
+		}
 	};
 
 	return (
