@@ -5,7 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import Message from '../components/Message.js';
 import Loader from '../components/Loader.js';
-import { listProducts, deleteProduct } from '../actions/productActions.js';
+import {
+	listProducts,
+	deleteProduct,
+	createProduct,
+} from '../actions/productActions.js';
+import { PRODUCT_CREATE_RESET } from '../constants/productConstants.js';
 
 const ProductListScreen = ({ history, match }) => {
 	const dispatch = useDispatch();
@@ -20,20 +25,42 @@ const ProductListScreen = ({ history, match }) => {
 		success: successDelete,
 	} = productDelete;
 
+	const productCreate = useSelector((state) => state.productCreate);
+	const {
+		loading: loadingCreate,
+		error: errorCreate,
+		success: successCreate,
+		product: createdProduct,
+	} = productCreate;
+
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
 
 	useEffect(() => {
-		if (userInfo && userInfo.isAdmin) {
-			dispatch(listProducts());
-		} else {
+		dispatch({
+			type: PRODUCT_CREATE_RESET,
+		});
+		if (!userInfo.isAdmin) {
 			history.push('/login');
 		}
+
+		if (successCreate) {
+			history.push(`/admin/product/${createdProduct._id}/edit`);
+		} else {
+			dispatch(listProducts());
+		}
 		// by passing successDelete into the useEffect dependencies, when successDelete state changes the useEffect will fire, triggering a dispatch for listProducts so that the deleted product will be removed from the displayed list of products.
-	}, [dispatch, history, userInfo, successDelete]);
+	}, [
+		dispatch,
+		history,
+		userInfo,
+		successDelete,
+		successCreate,
+		createdProduct,
+	]);
 
 	const createProductHandler = (product) => {
-		// create product action here
+		dispatch(createProduct());
 	};
 
 	const deleteHandler = (id) => {
@@ -55,6 +82,8 @@ const ProductListScreen = ({ history, match }) => {
 			</Row>
 			{loadingDelete && <Loader />}
 			{errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+			{loadingCreate && <Loader />}
+			{errorCreate && <Message variant='danger'>{errorCreate}</Message>}
 			{loading ? (
 				<Loader />
 			) : error ? (

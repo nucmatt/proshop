@@ -9,6 +9,9 @@ import {
 	PRODUCT_DELETE_REQUEST,
 	PRODUCT_DELETE_SUCCESS,
 	PRODUCT_DELETE_FAIL,
+	PRODUCT_CREATE_REQUEST,
+	PRODUCT_CREATE_FAIL,
+	PRODUCT_CREATE_SUCCESS,
 } from '../constants/productConstants.js';
 
 export const listProducts = () => async (dispatch) => {
@@ -77,10 +80,44 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: PRODUCT_DELETE_FAIL,
-			error:
+			payload:
 				error.response && error.response.data.message
 					? error.response.data.message
 					: error.message,
+		});
+	}
+};
+
+export const createProduct = () => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: PRODUCT_CREATE_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		};
+
+		// the second argument is an empty object since this is a post request that posts new data but we are not sending that data in this post request. It is posted via the createProduct endpoint route. The response data will contain the sample product data from the endpoint, which is then dispatched to state to populate the fields on the createProductScreen form.
+		const { data } = await axios.post('/api/products', {}, config);
+
+		dispatch({
+			type: PRODUCT_CREATE_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: PRODUCT_CREATE_FAIL,
+			payload:
+				error.response && error.response.data.message
+					? error.response.data.message
+					: error.response,
 		});
 	}
 };
