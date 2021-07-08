@@ -5,13 +5,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import Message from '../components/Message.js';
 import Loader from '../components/Loader.js';
-import { listProducts } from '../actions/productActions.js';
+import { listProducts, deleteProduct } from '../actions/productActions.js';
 
 const ProductListScreen = ({ history, match }) => {
 	const dispatch = useDispatch();
 
 	const productList = useSelector((state) => state.productList);
 	const { loading, error, products } = productList;
+
+	const productDelete = useSelector((state) => state.productDelete);
+	const {
+		loading: loadingDelete,
+		error: errorDelete,
+		success: successDelete,
+	} = productDelete;
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
@@ -22,16 +29,17 @@ const ProductListScreen = ({ history, match }) => {
 		} else {
 			history.push('/login');
 		}
-	}, [dispatch, history, userInfo]);
+		// by passing successDelete into the useEffect dependencies, when successDelete state changes the useEffect will fire, triggering a dispatch for listProducts so that the deleted product will be removed from the displayed list of products.
+	}, [dispatch, history, userInfo, successDelete]);
 
 	const createProductHandler = (product) => {
 		// create product action here
 	};
 
 	const deleteHandler = (id) => {
-		// if (window.confirm('Are you sure?')) {
-		// 	// DELETE product using id
-		// }
+		if (window.confirm('Are you sure?')) {
+			dispatch(deleteProduct(id));
+		}
 	};
 	return (
 		<>
@@ -45,6 +53,8 @@ const ProductListScreen = ({ history, match }) => {
 					</Button>
 				</Col>
 			</Row>
+			{loadingDelete && <Loader />}
+			{errorDelete && <Message variant='danger'>{errorDelete}</Message>}
 			{loading ? (
 				<Loader />
 			) : error ? (
@@ -77,7 +87,7 @@ const ProductListScreen = ({ history, match }) => {
 									<Button
 										variant='danger'
 										className='btn-sm'
-										onClick={deleteHandler(product._id)}
+										onClick={() => deleteHandler(product._id)}
 									>
 										<FaTrash />
 									</Button>
