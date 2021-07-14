@@ -2,6 +2,7 @@ import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FaShoppingCart, FaUser } from 'react-icons/fa';
+import SearchBox from './SearchBox.js';
 import { logout } from '../actions/userActions.js';
 
 const Header = () => {
@@ -22,6 +23,7 @@ const Header = () => {
 					</LinkContainer>
 					<Navbar.Toggle aria-controls='basic-navbar-nav' />
 					<Navbar.Collapse id='basic-navbar-nav'>
+						<SearchBox />
 						<Nav className='ms-auto'>
 							<LinkContainer to='/cart'>
 								<Nav.Link>
@@ -37,11 +39,13 @@ const Header = () => {
 										Logout
 									</NavDropdown.Item>
 								</NavDropdown>
-							) : <LinkContainer to='/login'>
-								<Nav.Link>
-									<FaUser /> Sign In
-								</Nav.Link>
-							</LinkContainer> }
+							) : (
+								<LinkContainer to='/login'>
+									<Nav.Link>
+										<FaUser /> Sign In
+									</Nav.Link>
+								</LinkContainer>
+							)}
 							{userInfo && userInfo.isAdmin && (
 								<NavDropdown title='Admin' id='adminmenu'>
 									<LinkContainer to='/admin/userlist'>
