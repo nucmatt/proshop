@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import Message from '../components/Message.js';
 import Loader from '../components/Loader.js';
+import Paginate from '../components/Paginate.js';
 import {
 	listProducts,
 	deleteProduct,
@@ -13,10 +14,12 @@ import {
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants.js';
 
 const ProductListScreen = ({ history, match }) => {
+	const pageNumber = match.params.pageNumber || 1;
+
 	const dispatch = useDispatch();
 
 	const productList = useSelector((state) => state.productList);
-	const { loading, error, products } = productList;
+	const { loading, error, products, page, pages } = productList;
 
 	const productDelete = useSelector((state) => state.productDelete);
 	const {
@@ -47,7 +50,8 @@ const ProductListScreen = ({ history, match }) => {
 		if (successCreate) {
 			history.push(`/admin/product/${createdProduct._id}/edit`);
 		} else {
-			dispatch(listProducts());
+			// Remember that the listProducts action takes in a keyword AND a pageNumber. The function is set up to require both of those arguments so you have to pass an empty string for listProducts here since the search funcionality is not hooked up to the ProductListScreen.
+			dispatch(listProducts('', pageNumber));
 		}
 		// by passing successDelete into the useEffect dependencies, when successDelete state changes the useEffect will fire, triggering a dispatch for listProducts so that the deleted product will be removed from the displayed list of products.
 	}, [
@@ -57,6 +61,7 @@ const ProductListScreen = ({ history, match }) => {
 		successDelete,
 		successCreate,
 		createdProduct,
+		pageNumber
 	]);
 
 	const createProductHandler = (product) => {
@@ -89,6 +94,7 @@ const ProductListScreen = ({ history, match }) => {
 			) : error ? (
 				<Message variant='danger'>{error}</Message>
 			) : (
+				<>
 				<Table striped bordered hover responsive className='table-sm'>
 					<thead>
 						<tr>
@@ -125,6 +131,8 @@ const ProductListScreen = ({ history, match }) => {
 						))}
 					</tbody>
 				</Table>
+				<Paginate pages={pages} page={page} isAdmin={true} />
+				</>
 			)}
 		</>
 	);
