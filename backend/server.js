@@ -22,10 +22,6 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-	res.send('API is running...');
-});
-
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
@@ -38,6 +34,21 @@ app.get('/api/config/paypal', (req, res) =>
 // Here we are making the uploads folder a static folder from which to serve the images contained in the folder up to the user as needed. Express by default does not allow static files so they must be enabled via the builtin static middleware.
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+// the frontend build folder is created when you execute npm run build while in the frontend folder of the app.
+if (process.env.NODE_ENV === 'production') {
+	// Set the build folder in the front end to a static folder
+	app.use(express.static(path.join(__dirname, '/frontend/build')));
+
+	// Any route called that is not part of the API above is directed to the index.html file within the frontend build folder.
+	app.get('*', (req, res) =>
+		res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+	);
+} else {
+	app.get('/', (req, res) => {
+		res.send('API is running...');
+	});
+}
 
 app.use(notFound);
 
